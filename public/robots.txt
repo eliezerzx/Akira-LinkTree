@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://SEU-DOMINIO.com/sitemap.xml
+Sitemap: https://akiralinks.netlify.app/sitemap.xml
