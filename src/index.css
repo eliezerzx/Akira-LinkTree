@@ -1,0 +1,447 @@
+:root {
+  --bg-start: #0d0d0f;
+  --bg-end: #1a0f2e;
+  --btn-bg: #17141f;
+  --btn-bg-hover: #2a1f3d;
+  --accent: #8b5cf6;
+  --radius: 16px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "Poppins", -apple-system, BlinkMacSystemFont, sans-serif;
+  min-height: 100vh;
+  background: #0d0d0f; /* fallback caso o WebGL nao carregue */
+  overflow-x: hidden;
+}
+
+/* Fundo animado (shader WebGL) fixo atras de todo o conteudo */
+.smoke-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  z-index: 0;
+}
+
+#root {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.page {
+  position: relative; /* precisa ser positioned para ficar acima do canvas (z-index) */
+  z-index: 1;
+  width: 100%;
+  max-width: 440px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 32px 16px;
+}
+
+.card {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.avatar {
+  width: 168px;
+  height: 168px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid var(--accent);
+  box-shadow: 0 4px 32px rgba(139, 92, 246, 0.5);
+  margin-bottom: 20px;
+}
+
+.name {
+  color: #fff;
+  font-size: 1.4rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  margin-bottom: 6px;
+}
+
+.bio {
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 0.95rem;
+  margin-bottom: 28px;
+  max-width: 320px;
+}
+
+.links {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* --- StarLinkButton (estrelinhas no hover) ---
+   Usa transform (translate/scale/rotate) + opacity em vez de top/left + z-index:
+   opacity sempre anima suave, independente de stacking, entao a animacao
+   fica garantida mesmo com varios botoes na mesma lista. */
+
+.star-btn {
+  position: relative;
+  isolation: isolate; /* contem o stacking dos filhos dentro do proprio botao */
+  display: block;
+  width: 100%;
+  overflow: visible;
+  text-align: center;
+  text-decoration: none;
+  padding: 14px 20px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #14111c;
+  background: var(--accent);
+  border: 3px solid var(--accent);
+  border-radius: 10px;
+  box-shadow: 0 0 0 rgba(139, 92, 246, 0);
+  cursor: pointer;
+  transition: background 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.star-btn:hover {
+  background: transparent;
+  color: var(--accent);
+  box-shadow: 0 0 25px rgba(139, 92, 246, 0.55);
+}
+
+.star-btn:active {
+  transform: scale(0.96);
+}
+
+.star-btn-label {
+  position: relative;
+  z-index: 1;
+}
+
+.star {
+  position: absolute;
+  top: 50%;
+  left: 18%;
+  z-index: -1;
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, -50%) scale(0.3) rotate(0deg);
+  filter: drop-shadow(0 0 0 rgba(139, 92, 246, 0));
+  transition: transform 850ms cubic-bezier(0.15, 0.85, 0.35, 1), opacity 450ms ease, filter 450ms ease;
+}
+
+.star-btn:hover .star {
+  opacity: 1;
+  z-index: 2;
+  filter: drop-shadow(0 0 8px rgba(139, 92, 246, 0.9));
+}
+
+.star-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  fill: var(--accent);
+}
+
+.star-1 {
+  width: 22px;
+  transition-duration: 900ms;
+}
+.star-btn:hover .star-1 {
+  transform: translate(-160%, -240%) scale(1) rotate(-15deg);
+}
+
+.star-2 {
+  width: 14px;
+  transition-duration: 850ms;
+}
+.star-btn:hover .star-2 {
+  transform: translate(10%, -190%) scale(1) rotate(20deg);
+}
+
+.star-3 {
+  width: 8px;
+  transition-duration: 750ms;
+}
+.star-btn:hover .star-3 {
+  transform: translate(-40%, 120%) scale(1) rotate(10deg);
+}
+
+.star-4 {
+  width: 10px;
+  transition-duration: 700ms;
+}
+.star-btn:hover .star-4 {
+  transform: translate(220%, -60%) scale(1) rotate(-10deg);
+}
+
+.star-5 {
+  width: 16px;
+  transition-duration: 600ms;
+}
+.star-btn:hover .star-5 {
+  transform: translate(320%, 40%) scale(1) rotate(25deg);
+}
+
+.star-6 {
+  width: 9px;
+  transition-duration: 650ms;
+}
+.star-btn:hover .star-6 {
+  transform: translate(140%, -140%) scale(1) rotate(5deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .star-btn,
+  .star {
+    transition: none !important;
+  }
+}
+
+/* --- LinkButton (icone + titulo + subtitulo) --- */
+
+.icon-link {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  text-decoration: none;
+  background: var(--btn-bg);
+  border: 1px solid rgba(139, 92, 246, 0.35);
+  border-radius: var(--radius);
+  padding: 12px 16px;
+  transition: transform 0.18s ease, background 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.icon-link:hover {
+  transform: translateY(-2px);
+  background: var(--btn-bg-hover);
+  border-color: var(--accent);
+  box-shadow: 0 6px 22px rgba(139, 92, 246, 0.35);
+}
+
+.icon-link:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.icon-link-icon {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(139, 92, 246, 0.15);
+  color: #fff;
+  transition: background 0.18s ease, transform 0.18s ease;
+}
+
+.icon-link-icon img {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+  border-radius: 5px;
+}
+
+.icon-link:hover .icon-link-icon {
+  background: rgba(139, 92, 246, 0.3);
+  transform: scale(1.06);
+}
+
+.icon-link-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  text-align: left;
+  min-width: 0;
+}
+
+.icon-link-title {
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.98rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.icon-link-subtitle {
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 0.8rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+/* variantes de tamanho */
+.icon-link--sm {
+  padding: 8px 12px;
+  gap: 10px;
+}
+.icon-link--sm .icon-link-icon {
+  width: 32px;
+  height: 32px;
+}
+.icon-link--sm .icon-link-icon img {
+  width: 18px;
+  height: 18px;
+}
+.icon-link--sm .icon-link-title {
+  font-size: 0.88rem;
+}
+.icon-link--sm .icon-link-subtitle {
+  font-size: 0.72rem;
+}
+
+.icon-link--lg {
+  padding: 16px 20px;
+  gap: 16px;
+}
+.icon-link--lg .icon-link-icon {
+  width: 48px;
+  height: 48px;
+}
+.icon-link--lg .icon-link-icon img {
+  width: 26px;
+  height: 26px;
+}
+.icon-link--lg .icon-link-title {
+  font-size: 1.05rem;
+}
+.icon-link--lg .icon-link-subtitle {
+  font-size: 0.85rem;
+}
+
+/* --- LinkBadge (efeito holografico) --- */
+
+.link-badge {
+  display: block;
+  width: 100%;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.link-badge-tilt {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 400 / 64;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+.link-badge-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.link-badge-bg {
+  fill: var(--btn-bg);
+  transition: fill 0.15s ease;
+}
+
+.link-badge:hover .link-badge-bg {
+  fill: var(--btn-bg-hover);
+}
+
+.link-badge-border {
+  fill: transparent;
+  stroke: rgba(139, 92, 246, 0.35);
+  stroke-width: 1.5;
+  transition: stroke 0.15s ease;
+}
+
+.link-badge:hover .link-badge-border {
+  stroke: var(--accent);
+}
+
+.link-badge-content {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: #fff;
+  font-weight: 500;
+  font-size: 0.98rem;
+  pointer-events: none;
+}
+
+.link-badge-icon {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+.footer {
+  margin-top: 36px;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.8rem;
+  text-align: center;
+}
+
+.footer-link {
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 0.75rem;
+  text-decoration: none;
+}
+
+.footer-link:hover {
+  color: var(--accent);
+  text-decoration: underline;
+}
+
+.footer-credit {
+  margin-top: 4px;
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.footer-credit-link {
+  color: rgba(255, 255, 255, 0.55);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.footer-credit-link:hover {
+  color: var(--accent);
+  text-decoration: underline;
+}
+
+@media (max-width: 380px) {
+  .avatar {
+    width: 128px;
+    height: 128px;
+  }
+  .name {
+    font-size: 1.2rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .link-badge-tilt {
+    transition: none !important;
+  }
+}
