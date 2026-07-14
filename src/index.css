@@ -83,129 +83,164 @@ body {
   max-width: 320px;
 }
 
+.links-wrapper {
+  position: relative;
+  width: 100%;
+}
+
 .links {
   width: 100%;
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 14px;
 }
 
-/* --- StarLinkButton (estrelinhas no hover) ---
-   Usa transform (translate/scale/rotate) + opacity em vez de top/left + z-index:
-   opacity sempre anima suave, independente de stacking, entao a animacao
-   fica garantida mesmo com varios botoes na mesma lista. */
-
-.star-btn {
-  position: relative;
-  isolation: isolate; /* contem o stacking dos filhos dentro do proprio botao */
+.mascot {
   display: block;
-  width: 100%;
-  overflow: visible;
-  text-align: center;
-  text-decoration: none;
-  padding: 14px 20px;
-  font-size: 1rem;
-  font-weight: 600;
-  color: #14111c;
-  background: var(--accent);
-  border: 3px solid var(--accent);
-  border-radius: 10px;
-  box-shadow: 0 0 0 rgba(139, 92, 246, 0);
-  cursor: pointer;
-  transition: background 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+  width: 170px;
+  height: auto;
+  margin: 0 auto 16px;
+  pointer-events: none;
+  user-select: none;
 }
 
-.star-btn:hover {
+@media (min-width: 900px) {
+  .mascot {
+    position: absolute;
+    right: -220px;
+    top: 50%;
+    width: 220px;
+    margin: 0;
+    transform: translateY(-50%);
+    animation: mascot-float 3.5s ease-in-out infinite;
+  }
+}
+
+@keyframes mascot-float {
+  0%, 100% {
+    transform: translateY(-50%);
+  }
+  50% {
+    transform: translateY(calc(-50% - 12px));
+  }
+}
+
+/* --- FlowButton (seta + circulo preenchendo no hover) ---
+   Portado do template (Tailwind arbitrary values) para CSS puro,
+   recolorido em roxo (tema Akira). */
+
+.flow-btn {
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  overflow: hidden;
+  width: 240px;
+  max-width: 100%;
+  box-sizing: border-box;
+  border-radius: 100px;
+  border: 1.5px solid rgba(139, 92, 246, 0.4);
   background: transparent;
-  color: var(--accent);
-  box-shadow: 0 0 25px rgba(139, 92, 246, 0.55);
+  padding: 18px 32px;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #fff;
+  text-decoration: none;
+  cursor: pointer;
+  transition: border-color 600ms cubic-bezier(0.23, 1, 0.32, 1),
+    border-radius 600ms cubic-bezier(0.23, 1, 0.32, 1),
+    color 600ms cubic-bezier(0.23, 1, 0.32, 1);
 }
 
-.star-btn:active {
-  transform: scale(0.96);
+@media (max-width: 380px) {
+  .flow-btn {
+    width: 200px;
+    padding: 15px 24px;
+    font-size: 0.95rem;
+  }
 }
 
-.star-btn-label {
+.flow-btn:hover {
+  border-color: transparent;
+  border-radius: 12px;
+  color: #14111c;
+}
+
+.flow-btn:active {
+  transform: scale(0.95);
+}
+
+.flow-btn-label {
   position: relative;
   z-index: 1;
+  transform: translateX(-12px);
+  transition: transform 800ms ease-out;
 }
 
-.star {
+.flow-btn:hover .flow-btn-label {
+  transform: translateX(12px);
+}
+
+.flow-btn-arrow {
   position: absolute;
-  top: 50%;
-  left: 18%;
-  z-index: -1;
-  opacity: 0;
-  pointer-events: none;
-  transform: translate(-50%, -50%) scale(0.3) rotate(0deg);
-  filter: drop-shadow(0 0 0 rgba(139, 92, 246, 0));
-  transition: transform 850ms cubic-bezier(0.15, 0.85, 0.35, 1), opacity 450ms ease, filter 450ms ease;
-}
-
-.star-btn:hover .star {
-  opacity: 1;
   z-index: 2;
-  filter: drop-shadow(0 0 8px rgba(139, 92, 246, 0.9));
+  width: 20px;
+  height: 20px;
+  stroke: #fff;
+  fill: none;
+  transition: left 800ms cubic-bezier(0.34, 1.56, 0.64, 1),
+    right 800ms cubic-bezier(0.34, 1.56, 0.64, 1),
+    stroke 800ms cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-.star-svg {
-  display: block;
-  width: 100%;
-  height: auto;
-  fill: var(--accent);
+.flow-btn-arrow-left {
+  left: -25%;
 }
 
-.star-1 {
-  width: 22px;
-  transition-duration: 900ms;
-}
-.star-btn:hover .star-1 {
-  transform: translate(-160%, -240%) scale(1) rotate(-15deg);
+.flow-btn:hover .flow-btn-arrow-left {
+  left: 20px;
+  stroke: #14111c;
 }
 
-.star-2 {
-  width: 14px;
-  transition-duration: 850ms;
-}
-.star-btn:hover .star-2 {
-  transform: translate(10%, -190%) scale(1) rotate(20deg);
+.flow-btn-arrow-right {
+  right: 20px;
 }
 
-.star-3 {
-  width: 8px;
-  transition-duration: 750ms;
-}
-.star-btn:hover .star-3 {
-  transform: translate(-40%, 120%) scale(1) rotate(10deg);
+.flow-btn:hover .flow-btn-arrow-right {
+  right: -25%;
+  stroke: #14111c;
 }
 
-.star-4 {
-  width: 10px;
-  transition-duration: 700ms;
-}
-.star-btn:hover .star-4 {
-  transform: translate(220%, -60%) scale(1) rotate(-10deg);
-}
-
-.star-5 {
+.flow-btn-circle {
+  position: absolute;
+  z-index: 0;
+  top: 50%;
+  left: 50%;
   width: 16px;
-  transition-duration: 600ms;
-}
-.star-btn:hover .star-5 {
-  transform: translate(320%, 40%) scale(1) rotate(25deg);
+  height: 16px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: var(--accent);
+  opacity: 0;
+  transition: width 800ms cubic-bezier(0.19, 1, 0.22, 1),
+    height 800ms cubic-bezier(0.19, 1, 0.22, 1),
+    opacity 800ms cubic-bezier(0.19, 1, 0.22, 1);
 }
 
-.star-6 {
-  width: 9px;
-  transition-duration: 650ms;
-}
-.star-btn:hover .star-6 {
-  transform: translate(140%, -140%) scale(1) rotate(5deg);
+.flow-btn:hover .flow-btn-circle {
+  width: 320px;
+  height: 320px;
+  opacity: 1;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .star-btn,
-  .star {
+  .flow-btn,
+  .flow-btn-label,
+  .flow-btn-arrow,
+  .flow-btn-circle {
     transition: none !important;
   }
 }
@@ -252,5 +287,8 @@ body {
   }
   .name {
     font-size: 1.2rem;
+  }
+  .mascot {
+    width: 140px;
   }
 }

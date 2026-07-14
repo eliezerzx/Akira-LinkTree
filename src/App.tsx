@@ -1,4 +1,4 @@
-import { StarLinkButton } from "./components/StarLinkButton";
+import { FlowButton } from "./components/FlowButton";
 import { SmokeBackground } from "./components/SmokeBackground";
 
 const links = [
@@ -16,11 +16,19 @@ function App() {
           <h1 className="name">AKIRA</h1>
           <p className="bio">"Uma live de cada vez.. Um passo de cada vez." 💜</p>
 
-          <nav className="links">
-            {links.map((link) => (
-              <StarLinkButton key={link.title} href={link.href} label={link.title} />
-            ))}
-          </nav>
+          <div className="links-wrapper">
+            <img
+              className="mascot"
+              src="/images/Tamano-cross-transparent.webp"
+              alt=""
+              aria-hidden="true"
+            />
+            <nav className="links">
+              {links.map((link) => (
+                <FlowButton key={link.title} href={link.href} text={link.title} />
+              ))}
+            </nav>
+          </div>
         </section>
 
         <footer className="footer">
